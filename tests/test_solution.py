@@ -293,24 +293,24 @@ class TestLLMJudge(unittest.TestCase):
 
 
 class TestEvalResultOverallScore(unittest.TestCase):
-    def _make_result(self, f, r, c):
+    def _make_result(self, f, r, c, con=1.0):
         qa = QAPair("q", "expected", None, {})
         return EvalResult(
             qa_pair=qa, actual_answer="actual",
-            faithfulness=f, relevance=r, completeness=c,
+            faithfulness=f, relevance=r, completeness=c, conciseness=con,
             passed=True, failure_type=None
         )
 
     def test_correct_average(self):
-        result = self._make_result(0.9, 0.8, 0.7)
-        self.assertAlmostEqual(result.overall_score(), (0.9 + 0.8 + 0.7) / 3, places=5)
+        result = self._make_result(0.9, 0.8, 0.7, 0.6)
+        self.assertAlmostEqual(result.overall_score(), (0.9 + 0.8 + 0.7 + 0.6) / 4.0, places=5)
 
     def test_all_ones_returns_one(self):
-        result = self._make_result(1.0, 1.0, 1.0)
+        result = self._make_result(1.0, 1.0, 1.0, 1.0)
         self.assertAlmostEqual(result.overall_score(), 1.0, places=5)
 
     def test_all_zeros_returns_zero(self):
-        result = self._make_result(0.0, 0.0, 0.0)
+        result = self._make_result(0.0, 0.0, 0.0, 0.0)
         self.assertAlmostEqual(result.overall_score(), 0.0, places=5)
 
 
